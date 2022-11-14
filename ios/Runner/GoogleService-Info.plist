@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CLIENT_ID</key>
+	<string>784276984391-18fofkpep07042tl7s6h6ji2qe0b08f2.apps.googleusercontent.com</string>
+	<key>REVERSED_CLIENT_ID</key>
+	<string>com.googleusercontent.apps.784276984391-18fofkpep07042tl7s6h6ji2qe0b08f2</string>
+	<key>API_KEY</key>
+	<string>AIzaSyC4XiHntsJVP0IocY7mcjhwEuruhzsFAr0</string>
+	<key>GCM_SENDER_ID</key>
+	<string>784276984391</string>
+	<key>PLIST_VERSION</key>
+	<string>1</string>
+	<key>BUNDLE_ID</key>
+	<string>com.kejar.kejarForParents</string>
+	<key>PROJECT_ID</key>
+	<string>kejarid-for-parents</string>
+	<key>STORAGE_BUCKET</key>
+	<string>kejarid-for-parents.appspot.com</string>
+	<key>IS_ADS_ENABLED</key>
+	<false></false>
+	<key>IS_ANALYTICS_ENABLED</key>
+	<false></false>
+	<key>IS_APPINVITE_ENABLED</key>
+	<true></true>
+	<key>IS_GCM_ENABLED</key>
+	<true></true>
+	<key>IS_SIGNIN_ENABLED</key>
+	<true></true>
+	<key>GOOGLE_APP_ID</key>
+	<string>1:784276984391:ios:98469565fbe3b99d749762</string>
+</dict>
+</plist>
