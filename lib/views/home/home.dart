@@ -1,12 +1,15 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:kejar_for_parents/database/DatabaseManager.dart';
 import 'package:kejar_for_parents/database/get_hari.dart';
 import 'package:kejar_for_parents/database/get_keterangan.dart';
 import 'package:kejar_for_parents/database/get_suptipe.dart';
 import 'package:kejar_for_parents/database/get_tipe.dart';
 import 'package:kejar_for_parents/database/get_waktu.dart';
+import 'package:kejar_for_parents/main.dart';
 import 'package:kejar_for_parents/views/home/header.dart';
 import 'package:kejar_for_parents/views/home/notif_header.dart';
 import 'package:kejar_for_parents/views/home/student_card.dart';
@@ -32,8 +35,40 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
   @override
   void initState() {
     _tabController = TabController(length: 3, vsync: this);
-    fetchUsername();
     super.initState();
+    FirebaseMessaging.onMessage.listen((RemoteMessage message) {
+      RemoteNotification? notification = message.notification;
+      AndroidNotification? android = message.notification?.android;
+      if (notification != null && android != null) {
+        flutterLocalNotificationsPlugin.show(
+            notification.hashCode,
+            notification.title,
+            notification.body,
+            NotificationDetails(
+                android: AndroidNotificationDetails(
+              channel.id,
+              channel.name,
+              channelDescription: channel.description,
+              color: Colors.blue,
+              playSound: true,
+            )));
+      }
+    });
+
+    FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
+      print('A new onMessageopenedApp event was published');
+      RemoteNotification? notification = message.notification;
+      AndroidNotification? android = message.notification?.android;
+      if (notification != null && android != null) {
+        showDialog(
+            context: context,
+            builder: (_) {
+              return AlertDialog(
+                title: Text(notification.title!),
+              );
+            });
+      }
+    });
     // fetchDatabaseList();
   }
 

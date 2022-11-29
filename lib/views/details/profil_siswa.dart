@@ -36,13 +36,10 @@ class ProfilSiswa extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   // Foto profile
-                  Container(
-                    height: 72,
-                    width: 72,
-                    decoration: BoxDecoration(
-                        color: Colors.grey,
-                        border: Border.all(color: Colors.blueGrey),
-                        borderRadius: BorderRadius.circular(100)),
+                  CircleAvatar(
+                    maxRadius: 36,
+                    backgroundColor: Colors.grey,
+                    backgroundImage: AssetImage('assets/images/profil.jpg'),
                   ),
 
                   //Nama

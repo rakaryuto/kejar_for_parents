@@ -27,6 +27,7 @@ class StudentInformation extends StatelessWidget {
           CircleAvatar(
             maxRadius: 32,
             backgroundColor: Colors.grey,
+            backgroundImage: AssetImage('assets/images/profil.jpg'),
           ),
 
           SizedBox(width: 16),
