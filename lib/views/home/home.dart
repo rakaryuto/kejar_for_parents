@@ -1,7 +1,15 @@
-import 'dart:ui';
-
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:kejar_for_parents/views/details/profil_siswa.dart';
+import 'package:kejar_for_parents/database/DatabaseManager.dart';
+import 'package:kejar_for_parents/database/get_hari.dart';
+import 'package:kejar_for_parents/database/get_keterangan.dart';
+import 'package:kejar_for_parents/database/get_suptipe.dart';
+import 'package:kejar_for_parents/database/get_tipe.dart';
+import 'package:kejar_for_parents/database/get_waktu.dart';
+import 'package:kejar_for_parents/views/home/header.dart';
+import 'package:kejar_for_parents/views/home/notif_header.dart';
+import 'package:kejar_for_parents/views/home/student_card.dart';
 
 class Home extends StatefulWidget {
   const Home({Key? key}) : super(key: key);
@@ -10,166 +18,207 @@ class Home extends StatefulWidget {
   State<Home> createState() => _HomeState();
 }
 
-class _HomeState extends State<Home> {
+final User? user = FirebaseAuth.instance.currentUser;
+final db = FirebaseFirestore.instance;
+
+class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
+  late TabController _tabController;
+
+  List notifProfilesList = [];
+  String? username;
+  String? studentName;
+  int? studentNIS;
+
+  @override
+  void initState() {
+    _tabController = TabController(length: 3, vsync: this);
+    fetchUsername();
+    super.initState();
+    // fetchDatabaseList();
+  }
+
+  Future fetchDatabaseList() async {
+    await db
+        .collection('notifications')
+        .get()
+        .then((snapshot) => snapshot.docs.forEach((document) {
+              print(document.reference);
+              notifProfilesList.add(document.reference.id);
+            }));
+  }
+
+  Future fetchUsername() async {
+    DocumentSnapshot snapshot =
+        await db.collection('users').doc('${user?.uid}').get();
+    Map<String, dynamic> data = snapshot.data() as Map<String, dynamic>;
+    username = data['name'];
+  }
+
+  Future fetchStudent() async {
+    await db
+        .collection('students')
+        .where('parent', isEqualTo: "${user?.uid}")
+        .snapshots()
+        .listen((data) {
+      studentName = data.docs[0]['name'];
+      studentNIS = data.docs[0]['NIS'];
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: Container(
-        margin: EdgeInsets.fromLTRB(8, 24, 8, 0),
+        margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
         decoration: BoxDecoration(color: Colors.white),
-        child: Column(
+        child: ListView(
+          scrollDirection: Axis.vertical,
           children: [
             //Header nama & settings
-            Container(
-              margin: EdgeInsets.fromLTRB(8, 16, 8, 0),
-              height: 48,
-              decoration: BoxDecoration(color: Colors.white),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        "Orang Tua/Wali",
-                        textAlign: TextAlign.start,
-                        style: TextStyle(
-                            fontSize: 13,
-                            fontWeight: FontWeight.w600,
-                            color: Colors.black26),
-                      ),
-                      SizedBox(height: 4),
-                      Text("Sujiwo Tejo Kasmingoen",
-                          textAlign: TextAlign.start,
-                          style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.w800,
-                              color: Colors.black87))
-                    ],
-                  ),
-                  IconButton(onPressed: () {}, icon: Icon(Icons.settings))
-                ],
-              ),
-            ),
+            FutureBuilder(
+                future: fetchUsername(),
+                builder: (context, snapshot) {
+                  return Header(name: '${username}');
+                }),
 
             SizedBox(height: 16),
 
             //Kartu detail informasi anak
-            Container(
-              margin: EdgeInsets.fromLTRB(8, 0, 8, 0),
-              padding: EdgeInsets.all(16),
-              height: 104,
-              decoration: BoxDecoration(
-                color: Color.fromRGBO(255, 253, 252, 100),
-                borderRadius: BorderRadius.circular(8),
-                border: Border.all(color: Colors.black12),
-              ),
-              child: Row(
-                children: [
-                  //Foto Profil Siswa
-                  Container(
-                    height: 64,
-                    width: 64,
-                    decoration: BoxDecoration(
-                        color: Colors.grey,
-                        borderRadius: BorderRadius.circular(100)),
-                  ),
+            FutureBuilder(builder: (conext, snapshot) {
+              return StudentInformation(
+                  StudentName: 'David Guetta', StudentNIS: '11806458');
+            }),
 
-                  SizedBox(width: 16),
-
-                  //Keterangan Siswa
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      //Nama Siswa
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            "Siswa",
-                            style: TextStyle(
-                                fontSize: 15,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.black),
-                          ),
-                          Text(
-                            "David Guetta",
-                            style: TextStyle(
-                                fontSize: 15,
-                                fontWeight: FontWeight.normal,
-                                color: Colors.black),
-                          )
-                        ],
-                      ),
-
-                      //NIS-Detail Button Row
-                      Row(
-                        children: [
-                          Row(
-                            children: [
-                              Text("NIS",
-                                  style: TextStyle(
-                                      fontSize: 15,
-                                      fontWeight: FontWeight.bold,
-                                      color: Colors.black)),
-                              SizedBox(width: 4),
-                              Text("11806458",
-                                  style: TextStyle(
-                                      fontSize: 15,
-                                      fontWeight: FontWeight.normal,
-                                      color: Colors.black)),
-                            ],
-                          ),
-                          SizedBox(width: 88),
-                          GestureDetector(
-                              onTap: () {
-                                Navigator.of(context).push(MaterialPageRoute(
-                                    builder: (context) => ProfilSiswa()));
-                              },
-                              child: Text(
-                                "Lihat Profil",
-                                style: TextStyle(
-                                    color: Colors.blue[800],
-                                    fontSize: 15,
-                                    fontWeight: FontWeight.bold),
-                              ))
-                        ],
-                      )
-                    ],
-                  )
-                ],
-              ),
-            ),
             SizedBox(height: 24),
 
             //Header notifikasi
-            Container(
-              padding: EdgeInsets.fromLTRB(16, 0, 16, 0),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text("Notifikasi",
-                      style: TextStyle(
-                          color: Colors.black,
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold)),
-
-                  //Filter Button untuk memfilter notifikasi
-                  IconButton(
-                      onPressed: () {},
-                      icon: Icon(
-                        Icons.filter_list,
-                        size: 24,
-                      )),
-                ],
-              ),
-            )
+            NotifHeader(),
 
             //Tabbar konten notifikasi
+            Container(
+              height: 48,
+              child: TabBar(
+                  indicatorColor: Color.fromRGBO(43, 103, 246, 100),
+                  indicatorWeight: 3,
+                  labelColor: Color.fromRGBO(43, 103, 246, 100),
+                  unselectedLabelColor: Colors.black,
+                  controller: _tabController,
+                  tabs: [
+                    TabBarTitle(title: "Semua"),
+                    TabBarTitle(title: "Absensi"),
+                    TabBarTitle(title: "Penilaian"),
+                  ]),
+            ),
+            Container(
+              height: MediaQuery.of(context).size.height / 1.9,
+              width: MediaQuery.of(context).size.width,
+              child: TabBarView(controller: _tabController, children: [
+                Container(
+                    child: FutureBuilder(
+                  future: fetchDatabaseList(),
+                  builder: (context, snapshot) {
+                    return ListView.builder(
+                        itemCount: notifProfilesList.length,
+                        itemBuilder: (context, index) {
+                          return ActivityContainer(
+                            tipe: GetTipe(docId: "${notifProfilesList[index]}"),
+                            subtipe: GetSubtipe(
+                                docId: "${notifProfilesList[index]}"),
+                            tanggal: GetTanggal(
+                                docId: "${notifProfilesList[index]}"),
+                            waktu:
+                                GetWaktu(docId: "${notifProfilesList[index]}"),
+                            ket: GetKeterangan(
+                                docId: "${notifProfilesList[index]}"),
+                          );
+                        });
+                  },
+                )),
+                Container(
+                  child: ListView(
+                    scrollDirection: Axis.vertical,
+                    children: [],
+                  ),
+                ),
+                Container(),
+              ]),
+            )
           ],
         ),
       ),
     );
+  }
+}
+
+class ActivityContainer extends StatelessWidget {
+  final Widget tipe;
+  final Widget subtipe;
+  final Widget tanggal;
+  final Widget waktu;
+  final Widget ket;
+
+  const ActivityContainer(
+      {Key? key,
+      required this.tipe,
+      required this.subtipe,
+      required this.tanggal,
+      required this.waktu,
+      required this.ket})
+      : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      margin: EdgeInsets.fromLTRB(0, 8, 0, 0),
+      padding: EdgeInsets.all(16),
+      height: 150,
+      decoration: BoxDecoration(
+          color: Colors.grey[100],
+          border: Border.all(color: Color.fromRGBO(229, 231, 242, 100))),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [tipe, subtipe],
+              ),
+              IconButton(
+                  onPressed: () {}, icon: Icon(Icons.navigate_next, size: 24))
+            ],
+          ),
+          Row(
+            children: [tanggal, SizedBox(width: 8), waktu],
+          ),
+          SizedBox(height: 8),
+          Text("Keterangan :",
+              style: TextStyle(
+                  color: Colors.grey,
+                  fontSize: 11,
+                  fontWeight: FontWeight.w600)),
+          SizedBox(height: 4),
+          ket
+        ],
+      ),
+    );
+  }
+}
+
+class TabBarTitle extends StatelessWidget {
+  final String? title;
+  const TabBarTitle({
+    Key? key,
+    this.title,
+  }) : super(key: key);
+
+  @override
+  Widget build(
+    BuildContext context,
+  ) {
+    return Text("${title}",
+        style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600));
   }
 }

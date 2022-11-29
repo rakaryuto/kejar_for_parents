@@ -1,5 +1,5 @@
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:kejar_for_parents/models/user.dart';
 import 'package:kejar_for_parents/services/auth.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:kejar_for_parents/views/home/home.dart';
@@ -12,37 +12,11 @@ class SignIn extends StatefulWidget {
 }
 
 class _SignInState extends State<SignIn> {
-  //final AuthService _auth = AuthService();
+  final AuthService _auth = AuthService();
 
   //text controller
-  final emailController = TextEditingController();
-  final passwordController = TextEditingController();
-
-  //sign in function
-  Future<User?> signInEmailPass(
-      {required String email,
-      required String password,
-      required BuildContext context}) async {
-    FirebaseAuth auth = FirebaseAuth.instance;
-    User? user;
-
-    try {
-      UserCredential userCredential = await auth.signInWithEmailAndPassword(
-          email: email, password: password);
-      user = userCredential.user;
-    } on FirebaseAuthException catch (e) {
-      print(e);
-    }
-
-    return user;
-  }
-
-  @override
-  void dispose() {
-    emailController.dispose();
-    passwordController.dispose();
-    super.dispose();
-  }
+  final _emailController = TextEditingController();
+  final _passwordController = TextEditingController();
 
   //fungsi untuk visibility password
   bool isHidden = true;
@@ -88,7 +62,7 @@ class _SignInState extends State<SignIn> {
                         color: Colors.white),
                     child: TextField(
                       keyboardType: TextInputType.emailAddress,
-                      controller: emailController,
+                      controller: _emailController,
                       decoration: InputDecoration(
                           border: InputBorder.none, hintText: "Email"),
                       style: TextStyle(fontSize: 16),
@@ -106,7 +80,7 @@ class _SignInState extends State<SignIn> {
                         color: Colors.white),
                     child: TextField(
                       obscureText: isHidden,
-                      controller: passwordController,
+                      controller: _passwordController,
                       decoration: InputDecoration(
                           suffixIcon: InkWell(
                               onTap: toggePasswordView,
@@ -131,18 +105,16 @@ class _SignInState extends State<SignIn> {
                   ),
                   ElevatedButton(
                     onPressed: () async {
-                      print("mulai sign in");
-                      User? user = await signInEmailPass(
-                          email: emailController.text.trim(),
-                          password: passwordController.text.trim(),
-                          context: context);
-                      print(user);
-                      if (user != null) {
-                        Navigator.of(context).push(
-                            MaterialPageRoute(builder: (context) => Home()));
+                      print("start sign in as ${_emailController.text}");
+                      dynamic result = await _auth.signInEmailPass(
+                          _emailController.text, _passwordController.text);
+                      if (result == null) {
+                        print("Sign in error");
                       } else {
-                        print("Tidak ada user");
+                        UserClass(uid: result.uid);
+                        print("Signed in");
                       }
+                      print(result);
                     },
                     child: Text(
                       "Masuk",
@@ -166,12 +138,7 @@ class _SignInState extends State<SignIn> {
 
                       //Direct Link untuk CS
                       GestureDetector(
-                        onTap: () async {
-                          await FirebaseAuth.instance
-                              .createUserWithEmailAndPassword(
-                                  email: emailController.text,
-                                  password: passwordController.text);
-                        },
+                        onTap: () {},
                         child: Text(
                           "di sini",
                           style: TextStyle(

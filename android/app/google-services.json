@@ -1,33 +1,33 @@
 {
   "project_info": {
-    "project_number": "223858097045",
-    "project_id": "kejar-for-parents",
-    "storage_bucket": "kejar-for-parents.appspot.com"
+    "project_number": "784276984391",
+    "project_id": "kejarid-for-parents",
+    "storage_bucket": "kejarid-for-parents.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:223858097045:android:5b4c7bc951c72f16d3949c",
+        "mobilesdk_app_id": "1:784276984391:android:bcfffca9c3fcd745749762",
         "android_client_info": {
           "package_name": "com.kejar.kejar_for_parents"
         }
       },
       "oauth_client": [
         {
-          "client_id": "223858097045-6bvoboqrdeba899abd0nm6s52dr81ud7.apps.googleusercontent.com",
+          "client_id": "784276984391-4q19jetedsj7rpdnm816teglo6lk7lg3.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyC12h4AG7ApymPz75woYYmHZv3f3_JvzoI"
+          "current_key": "AIzaSyCivlH4fubEO-sLPnweBqCSqxlX4KvyHEg"
         }
       ],
       "services": {
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "223858097045-6bvoboqrdeba899abd0nm6s52dr81ud7.apps.googleusercontent.com",
+              "client_id": "784276984391-4q19jetedsj7rpdnm816teglo6lk7lg3.apps.googleusercontent.com",
               "client_type": 3
             }
           ]
